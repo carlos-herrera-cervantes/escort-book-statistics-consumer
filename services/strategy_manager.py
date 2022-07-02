@@ -1,5 +1,6 @@
 from services.strategies.general_statistic_service import GeneralStatisticService
 from services.strategies.payment_service import PaymentService
+from services.strategies.claim_service import ClaimService
 from services.interfaces.strategy_interface import Strategy
 from config.db import MongoClient, PostgresClient
 from repositories.tracking_repository import TrackingRepository
@@ -34,7 +35,12 @@ class StrategyManager:
                 TopEscortRepository(),
                 TopPlaceRepository(),
                 PaymentStatisticRepository(),
-            )
+            ),
+            'claim': ClaimService(
+                GeneralStatisticRepository(),
+                UserStatisticRepository(),
+                TrackingRepository(postgres_clients['tracking_db']),
+            ),
         }
         self.__operation: str = operation
 
