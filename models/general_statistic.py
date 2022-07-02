@@ -8,6 +8,7 @@ class GeneralStatistic(Document):
     total_escorts: int = IntField(default=0)
     earnings = DecimalField(default=0)
     raw_created_at: str = StringField()
+    claims: int = IntField(default=0)
     created_at: datetime = DateTimeField(default=datetime.now())
 
 
@@ -17,6 +18,7 @@ class StateStatistic(Document):
     earnings = DecimalField(default=0)
     state: str = StringField()
     raw_created_at: str = StringField()
+    claims: int = IntField(default=0)
     created_at: datetime = DateTimeField(default=datetime.now())
 
 
@@ -27,4 +29,5 @@ class CityStatistic(Document):
     city: str = StringField()
     state: str = StringField()
     raw_created_at: str = StringField()
+    claims: int = IntField(default=0)
     created_at: datetime = DateTimeField(default=datetime.now())

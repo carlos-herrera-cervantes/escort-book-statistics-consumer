@@ -9,6 +9,8 @@ class CustomerStatistic(Document):
     spent_money = DecimalField(default=0)
     raw_created_at: str = StringField()
     created_at: datetime = DateTimeField(default=datetime.now())
+    emitted_claims: int = IntField(default=0)
+    received_claims: int = IntField(default=0)
     meta = {'collection': 'customer_statistic'}
 
 
@@ -18,4 +20,6 @@ class EscortStatistic(Document):
     earned_money = DecimalField(default=0)
     raw_created_at: str = StringField()
     created_at: datetime = DateTimeField(default=datetime.now())
+    emitted_claims: int = IntField(default=0)
+    received_claims: int = IntField(default=0)
     meta = {'collection': 'escort_statistic'}
