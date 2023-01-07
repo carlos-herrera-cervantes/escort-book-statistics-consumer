@@ -1,0 +1,5 @@
+confluent-kafka==1.9.2
+mongoengine==0.24.1
+psycopg2==2.9.3
+psycopg2-binary==2.9.3
+pymongo==4.1.1

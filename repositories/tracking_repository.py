@@ -8,14 +8,14 @@ class TrackingRepository:
     def __init__(self, postgres_client: connection) -> None:
         self.__postgres_client = postgres_client
 
-    async def get_escort_location(self, escort_id: str) -> Location:
+    def get_escort_location(self, escort_id: str) -> Location:
         conn: cursor = self.__postgres_client.cursor()
         query: str = (
-                'SELECT a.escort_id, b.name, c.name, d.name FROM escort_tracking AS a ' +
-                'JOIN territory AS b ON st_intersects(a.location, b.location) ' +
-                'JOIN state AS c ON b.state_id = c.id '
-                'JOIN country AS d ON c.country_id = d.id '
-                f"WHERE a.escort_id = '{escort_id}'"
+            'SELECT a.escort_id, b.name, c.name, d.name FROM escort_tracking AS a ' +
+            'JOIN territory AS b ON st_intersects(a.location, b.location) ' +
+            'JOIN state AS c ON b.state_id = c.id '
+            'JOIN country AS d ON c.country_id = d.id '
+            f"WHERE a.escort_id = '{escort_id}'"
         )
         conn.execute(query)
         rows: list = conn.fetchall()
@@ -31,14 +31,14 @@ class TrackingRepository:
             print('Error getting escort location: ', e)
             return None
 
-    async def get_customer_location(self, customer_id: str) -> Location:
+    def get_customer_location(self, customer_id: str) -> Location:
         conn: cursor = self.__postgres_client.cursor()
         query: str = (
-                'SELECT a.customer_id, b.name, c.name, d.name FROM customer_tracking AS a ' +
-                'JOIN territory AS b ON st_intersects(a.location, b.location) ' +
-                'JOIN state AS c ON b.state_id = c.id '
-                'JOIN country AS d ON c.country_id = d.id '
-                f"WHERE a.customer_id = '{customer_id}'"
+            'SELECT a.customer_id, b.name, c.name, d.name FROM customer_tracking AS a ' +
+            'JOIN territory AS b ON st_intersects(a.location, b.location) ' +
+            'JOIN state AS c ON b.state_id = c.id '
+            'JOIN country AS d ON c.country_id = d.id '
+            f"WHERE a.customer_id = '{customer_id}'"
         )
 
         conn.execute(query)
@@ -55,7 +55,7 @@ class TrackingRepository:
             print('Error getting customer location: ', e)
             return None
 
-    async def count_customers_by_city(self, city: str) -> int:
+    def count_customers_by_city(self, city: str) -> int:
         conn: cursor = self.__postgres_client.cursor()
         query: str = (
             'SELECT COUNT(a.*) FROM customer_tracking AS a ' +
@@ -67,7 +67,7 @@ class TrackingRepository:
 
         return counter[0]
 
-    async def count_escorts_by_city(self, city: str) -> int:
+    def count_escorts_by_city(self, city: str) -> int:
         conn: cursor = self.__postgres_client.cursor()
         query: str = (
             'SELECT COUNT(a.*) FROM escort_tracking AS a ' +

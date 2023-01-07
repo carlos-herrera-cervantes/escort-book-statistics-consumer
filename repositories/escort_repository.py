@@ -10,7 +10,7 @@ class EscortRepository:
     def __init__(self, postgres_client: connection) -> None:
         self.__postgres_client = postgres_client
 
-    async def get_by_id(self, escort_id: str) -> EscortProfile | None:
+    def get_by_id(self, escort_id: str) -> EscortProfile | None:
         conn: cursor = self.__postgres_client.cursor()
         conn.execute(f"SELECT escort_id, first_name, last_name FROM profile WHERE escort_id = '{escort_id}';")
         rows: list = conn.fetchall()

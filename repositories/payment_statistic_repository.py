@@ -6,40 +6,40 @@ from models.payment_statistic import PaymentStatistic, PaymentStateStatistic, Pa
 class PaymentStatisticRepository:
 
     @staticmethod
-    async def get_payment_statistic(query: dict) -> list[PaymentStatistic]:
+    def get_payment_statistic(query: dict) -> list[PaymentStatistic]:
         return PaymentStatistic.objects(__raw__=query)
 
     @staticmethod
-    async def add_payment_statistic(payment: dict) -> None:
+    def add_payment_statistic(payment: dict) -> None:
         new_payment: PaymentStatistic = PaymentStatistic(**payment)
         new_payment.save()
 
     @staticmethod
-    async def update_payment_statistic(pk: str, changes: dict) -> None:
+    def update_payment_statistic(pk: str, changes: dict) -> None:
         PaymentStatistic.objects(id=ObjectId(pk)).update_one(**changes)
 
     @staticmethod
-    async def get_state_payment_statistic(query: dict) -> list[PaymentStateStatistic]:
+    def get_state_payment_statistic(query: dict) -> list[PaymentStateStatistic]:
         return PaymentStateStatistic.objects(__raw__=query)
 
     @staticmethod
-    async def add_state_payment_statistic(payment: dict) -> None:
+    def add_state_payment_statistic(payment: dict) -> None:
         new_payment: PaymentStateStatistic = PaymentStateStatistic(**payment)
         new_payment.save()
 
     @staticmethod
-    async def update_state_payment_statistic(pk: str, changes: dict) -> None:
+    def update_state_payment_statistic(pk: str, changes: dict) -> None:
         PaymentStateStatistic.objects(id=ObjectId(pk)).update_one(**changes)
 
     @staticmethod
-    async def get_city_payment_statistic(query: dict) -> list[PaymentCityStatistic]:
+    def get_city_payment_statistic(query: dict) -> list[PaymentCityStatistic]:
         return PaymentCityStatistic.objects(__raw__=query)
 
     @staticmethod
-    async def add_city_payment_statistic(payment: dict) -> None:
+    def add_city_payment_statistic(payment: dict) -> None:
         new_payment: PaymentCityStatistic = PaymentCityStatistic(**payment)
         new_payment.save()
 
     @staticmethod
-    async def update_city_payment_statistic(pk: str, changes: dict) -> None:
+    def update_city_payment_statistic(pk: str, changes: dict) -> None:
         PaymentCityStatistic.objects(id=ObjectId(pk)).update_one(**changes)
