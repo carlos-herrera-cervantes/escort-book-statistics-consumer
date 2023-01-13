@@ -10,7 +10,7 @@ from models.user_statistic import CustomerStatistic, EscortStatistic
 class UserStatisticRepository:
 
     @staticmethod
-    async def get_customer_statistic(query: dict) -> CustomerStatistic | None:
+    def get_customer_statistic(query: dict) -> CustomerStatistic | None:
         try:
             return CustomerStatistic.objects.get(__raw__=query)
         except Exception as e:
@@ -18,20 +18,20 @@ class UserStatisticRepository:
             return None
 
     @staticmethod
-    async def count_customer_statistic(query: dict) -> int:
+    def count_customer_statistic(query: dict) -> int:
         return CustomerStatistic.objects(__raw__=query).count()
 
     @staticmethod
-    async def add_customer_statistic(statistic: dict) -> None:
+    def add_customer_statistic(statistic: dict) -> None:
         new_statistic: CustomerStatistic = CustomerStatistic(**statistic)
         new_statistic.save()
 
     @staticmethod
-    async def update_customer_statistic(pk: str, changes: dict) -> None:
+    def update_customer_statistic(pk: str, changes: dict) -> None:
         CustomerStatistic.objects(id=ObjectId(pk)).update_one(**changes)
 
     @staticmethod
-    async def get_escort_statistic(query: dict) -> EscortStatistic | None:
+    def get_escort_statistic(query: dict) -> EscortStatistic | None:
         try:
             return EscortStatistic.objects.get(__raw__=query)
         except Exception as e:
@@ -39,20 +39,20 @@ class UserStatisticRepository:
             return None
 
     @staticmethod
-    async def count_escort_statistic(query: dict) -> int:
+    def count_escort_statistic(query: dict) -> int:
         return EscortStatistic.objects(__raw__=query).count()
 
     @staticmethod
-    async def add_escort_statistic(statistic: dict) -> None:
+    def add_escort_statistic(statistic: dict) -> None:
         new_statistic: EscortStatistic = EscortStatistic(**statistic)
         new_statistic.save()
 
     @staticmethod
-    async def update_escort_statistic(pk: str, changes: dict) -> None:
+    def update_escort_statistic(pk: str, changes: dict) -> None:
         EscortStatistic.objects(id=ObjectId(pk)).update_one(**changes)
 
     @staticmethod
-    async def sum_services(escort_id: str) -> int:
+    def sum_services(escort_id: str) -> int:
         pipeline: list = [{'$group': {'_id': '$escort_id', 'total': {'$sum': '$services_provided'}}}]
         cursor = EscortStatistic.objects(__raw__={'escort_id': ObjectId(escort_id)}).aggregate(pipeline)
         results: dict = json.loads(dumps(cursor))

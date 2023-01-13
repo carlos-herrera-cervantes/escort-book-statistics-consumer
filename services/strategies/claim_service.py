@@ -1,5 +1,6 @@
-from datetime import date
 import asyncio
+from datetime import date
+from functools import partial
 
 from bson.objectid import ObjectId
 
@@ -10,6 +11,7 @@ from repositories.tracking_repository import TrackingRepository
 from models.general_statistic import GeneralStatistic, StateStatistic, CityStatistic
 from models.location import Location
 from models.user_statistic import CustomerStatistic, EscortStatistic
+from common.promise import Promise
 
 
 class ClaimService(Strategy):
@@ -25,61 +27,83 @@ class ClaimService(Strategy):
         self.__tracking_repository = tracking_repository
 
     async def __process_claim(self, today: str) -> None:
-        query: dict = {'raw_created_at': today}
-        statistic: GeneralStatistic = await self.__general_statistic_repository.get_general_statistic(query)
+        query = {'raw_created_at': today}
+        statistic: GeneralStatistic = await Promise.resolve(
+            partial(self.__general_statistic_repository.get_general_statistic, query)
+        )
 
         if not statistic:
-            new_statistic: dict = {'claims': 1, 'raw_created_at': today}
-            await self.__general_statistic_repository.add_general_statistic(new_statistic)
+            new_statistic = {'claims': 1, 'raw_created_at': today}
+            await Promise.resolve(
+                partial(self.__general_statistic_repository.add_general_statistic, new_statistic)
+            )
             return
-        
-        changes: dict = {'claims': statistic.claims + 1}
-        await self.__general_statistic_repository.update_general_statistic(statistic.id, changes)
+
+        changes = {'claims': statistic.claims + 1}
+        await Promise.resolve(
+            partial(self.__general_statistic_repository.update_general_statistic, statistic.id, changes)
+        )
 
     async def __process_state_claim(self, today: str, location: Location) -> None:
-        query: dict = {'raw_created_at': today, 'state': location.state}
-        statistic: StateStatistic = await self.__general_statistic_repository.get_state_statistic(query)
+        query = {'raw_created_at': today, 'state': location.state}
+        statistic: StateStatistic = await Promise.resolve(
+            partial(self.__general_statistic_repository.get_state_statistic, query)
+        )
 
         if not statistic:
-            new_statistic: dict = {'claims': 1, 'raw_created_at': today, 'state': location.state}
-            await self.__general_statistic_repository.add_state_statistic(new_statistic)
+            new_statistic = {'claims': 1, 'raw_created_at': today, 'state': location.state}
+            await Promise.resolve(
+                partial(self.__general_statistic_repository.add_state_statistic, new_statistic)
+            )
             return
 
-        changes: dict = {'claims': statistic.claims + 1}
-        await self.__general_statistic_repository.update_state_statistic(statistic.id, changes)
+        changes = {'claims': statistic.claims + 1}
+        await Promise.resolve(
+            partial(self.__general_statistic_repository.update_state_statistic, statistic.id, changes)
+        )
 
     async def __process_city_claim(self, today: str, location: Location) -> None:
-        query: dict = {'raw_created_at': today, 'city': location.city}
-        statistic: CityStatistic = await self.__general_statistic_repository.get_city_statistic(query)
+        query = {'raw_created_at': today, 'city': location.city}
+        statistic: CityStatistic = await Promise.resolve(
+            partial(self.__general_statistic_repository.get_city_statistic, query)
+        )
 
         if not statistic:
-            new_statistic: dict = {
+            new_statistic = {
                 'claims': 1,
                 'raw_created_at': today,
                 'state': location.state,
                 'city': location.city,
             }
-            await self.__general_statistic_repository.add_city_statistic(new_statistic)
+            await Promise.resolve(
+                partial(self.__general_statistic_repository.add_city_statistic, new_statistic)
+            )
             return
 
-        changes: dict = {'claims': statistic.claims + 1}
-        await self.__general_statistic_repository.update_city_statistic(statistic.id, changes)
+        changes = {'claims': statistic.claims + 1}
+        await Promise.resolve(
+            partial(self.__general_statistic_repository.update_city_statistic, statistic.id, changes)
+        )
 
     async def __process_customer_claim(self, message: dict, today: str) -> None:
-        query: dict = {'raw_created_at': today, 'customer_id': ObjectId(message['customerId'])}
-        statistic: CustomerStatistic = await self.__user_statistic_repository.get_customer_statistic(query)
+        query = {'raw_created_at': today, 'customer_id': ObjectId(message['customerId'])}
+        statistic: CustomerStatistic = await Promise.resolve(
+            partial(self.__user_statistic_repository.get_customer_statistic, query)
+        )
 
         if not statistic:
-            new_statistic: dict = {
+            new_statistic = {
                 'customer_id': message['customerId'],
                 'raw_created_at': today,
                 'emitted_claims': 0 if message['to'] == 'Customer' else 1,
                 'received_claims': 0 if message['to'] == 'Escort' else 1,
             }
-            await self.__user_statistic_repository.add_customer_statistic(new_statistic)
+            await Promise.resolve(
+                partial(self.__user_statistic_repository.add_customer_statistic, new_statistic)
+            )
             return
 
-        changes: dict = {
+        changes = {
             'emitted_claims':(
                 statistic.emitted_claims if message['to'] == 'Customer' else statistic.emitted_claims + 1
             ),
@@ -87,23 +111,29 @@ class ClaimService(Strategy):
                 statistic.received_claims if message['to'] == 'Escort' else statistic.received_claims + 1
             ),
         }
-        await self.__user_statistic_repository.update_customer_statistic(statistic.id, changes)
+        await Promise.resolve(
+            partial(self.__user_statistic_repository.update_customer_statistic, statistic.id, changes)
+        )
 
     async def __process_escort_claim(self, message: dict, today: str) -> None:
-        query: dict = {'raw_created_at': today, 'escort_id': ObjectId(message['escortId'])}
-        statistic: EscortStatistic = await self.__user_statistic_repository.get_escort_statistic(query)
+        query = {'raw_created_at': today, 'escort_id': ObjectId(message['escortId'])}
+        statistic: EscortStatistic = await Promise.resolve(
+            partial(self.__user_statistic_repository.get_escort_statistic, query)
+        )
 
         if not statistic:
-            new_statistic: dict = {
+            new_statistic = {
                 'escort_id': message['escortId'],
                 'raw_created_at': today,
                 'emitted_claims': 0 if message['to'] == 'Escort' else 1,
                 'received_claims': 0 if message['to'] == 'Customer' else 1,
             }
-            await self.__user_statistic_repository.add_escort_statistic(new_statistic)
+            await Promise.resolve(
+                partial(self.__user_statistic_repository.add_escort_statistic, new_statistic)
+            )
             return
 
-        changes: dict = {
+        changes = {
             'emitted_claims':(
                 statistic.emitted_claims if message['to'] == 'Escort' else statistic.emitted_claims + 1
             ),
@@ -111,11 +141,15 @@ class ClaimService(Strategy):
                 statistic.received_claims if message['to'] == 'Customer' else statistic.received_claims + 1
             ),
         }
-        await self.__user_statistic_repository.update_escort_statistic(statistic.id, changes)
+        await Promise.resolve(
+            partial(self.__user_statistic_repository.update_escort_statistic, statistic.id, changes)
+        )
 
     async def process_message(self, message: dict) -> None:
         today: str = date.today().strftime('%Y-%m-%d')
-        location: Location = await self.__tracking_repository.get_escort_location(message['escortId'])
+        location: Location = await Promise.resolve(
+            partial(self.__tracking_repository.get_escort_location, message['escortId'])
+        )
 
         tasks: list = [
             self.__process_claim(today),
