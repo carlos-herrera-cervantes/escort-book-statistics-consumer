@@ -1,15 +1,15 @@
-import os
 import json
 
 from confluent_kafka import Consumer
 
 from services.strategy_manager import initialize_manager
+from config.kafka import KafkaClient
 
 
 async def listen() -> None:
     config = {
-        'bootstrap.servers': os.getenv('KAFKA_HOSTS'),
-        'group.id': 'escort-book-statistics-consumer',
+        'bootstrap.servers': KafkaClient.SERVERS.value,
+        'group.id': KafkaClient.GROUP_ID.value,
         'enable.auto.commit': True,
         'auto.offset.reset': 'earliest',
     }
